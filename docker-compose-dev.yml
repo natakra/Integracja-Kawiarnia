@@ -1,1 +1,21 @@
-
+services:
+  order:
+    build: ./orderService
+    ports:
+      - "8000:12340"
+  user:
+    build: ./userService
+    ports:
+      - "8000:12341"
+  loyalty:
+    build: ./loyaltyService
+    ports:
+      - "8000:12342"
+  menu:
+    build: ./menuService
+    ports:
+      - "8000:12343"
+  reservation:
+    build: ./reservationService
+    ports:
+      - "8000:12344"
