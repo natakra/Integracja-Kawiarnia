@@ -2,20 +2,24 @@ services:
   order:
     build: ./orderService
     ports:
-      - "8000:12340"
+      - "12340:8000"
   user:
     build: ./userService
     ports:
-      - "8000:12341"
+      - "12341:8000"
   loyalty:
     build: ./loyaltyService
     ports:
-      - "8000:12342"
+      - "12342:8000"
   menu:
     build: ./menuService
     ports:
-      - "8000:12343"
+      - "12343:8000"
   reservation:
     build: ./reservationService
     ports:
-      - "8000:12344"
+      - "12344:8000"
+  rabbitmq:
+    image: "rabbitmq:latest"
+    ports:
+      - "5672:5672"
