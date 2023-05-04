@@ -1,2 +1,5 @@
 */.idea
 .idea
+sql_app.db
+.vscode
+__pycache__
