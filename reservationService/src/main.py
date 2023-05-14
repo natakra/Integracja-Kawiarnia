@@ -1,10 +1,13 @@
-from starlite import Starlite, get
+from fastapi import FastAPI
+
+from reservationService.src.router.reservationrouter import router
+
+app = FastAPI()
 
 
-@get("/")
-def hello_world() -> dict[str, str]:
-    """Keeping the tradition alive with hello world."""
-    return {"hello": "world"}
+@app.get('/')
+def root():
+    return {"message": "Hello World"}
 
 
-app = Starlite(route_handlers=[hello_world])
+app.include_router(router)

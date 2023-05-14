@@ -1,10 +1,15 @@
-from starlite import Starlite, get
+import firebase_admin
+from fastapi import FastAPI
+from firebase_admin import credentials
+
+from userService.src.router.userrouter import router
+
+app = FastAPI()
+
+app.include_router(router)
 
 
-@get("/")
-def hello_world() -> dict[str, str]:
-    """Keeping the tradition alive with hello world."""
-    return {"hello": "world"}
-
-
-app = Starlite(route_handlers=[hello_world])
+@app.on_event("startup")
+def startup():
+    cred = credentials.Certificate("userService/src/firebase_config.json")
+    firebase_admin.initialize_app(cred)
