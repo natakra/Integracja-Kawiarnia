@@ -12,8 +12,10 @@ from starlette.exceptions import HTTPException
 from starlette.requests import Request
 from starlette.responses import Response
 
+from reservationService.src.schemas.reservation_schemas import CreateReservation
+
 app = FastAPI(title='API Gateway')
-SERVICE_URL = "http://localhost:8001"
+SERVICE_URL = "http://localhost:8000"
 
 API_KEY_NAME = "x-api-key"
 
@@ -67,5 +69,21 @@ class FooModel(BaseModel):
 )
 async def check_query_params_and_body(
         path: int, request: Request, response: Response
+):
+    pass
+
+
+@route(
+    request_method=app.post,
+    service_url=SERVICE_URL,
+    gateway_path='/reservation',
+    service_path='/reservation',
+    status_code=status.HTTP_200_OK,
+    body_params=["reservation_form"],
+    query_params=["user_id"],
+    tags=['Query', 'Body', 'Path'],
+)
+async def post_reservation(
+        reservation_form: CreateReservation, request: Request, response: Response, user_id: str = Depends(check_api_key)
 ):
     pass
