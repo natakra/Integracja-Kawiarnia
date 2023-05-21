@@ -3,3 +3,4 @@
 sql_app.db
 .vscode
 __pycache__
+secret.py

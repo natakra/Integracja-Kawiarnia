@@ -2,8 +2,10 @@ import asyncio
 
 import aio_pika
 from fastapi import FastAPI
+from trycourier import Courier
 
 from menuService.src.db.database import Base, engine
+from notificationService import secret
 
 Base.metadata.create_all(bind=engine)
 
@@ -47,3 +49,20 @@ async def on_startup():
 @app.on_event("shutdown")
 def on_shutdown():
     app.state.connection.close()
+
+
+client = Courier(auth_token=secret.courier_token)  # or set via COURIER_AUTH_TOKEN env var
+
+resp = client.send_message(
+    message={
+        "to": {
+            "email": "radco.iv@gmail.com",
+        },
+        "template": "P91X2NCK2B49B1QNHRX01TET9FDY",
+        "data": {
+            "recipientName": "recipientName",
+        },
+    }
+)
+
+print(resp)
