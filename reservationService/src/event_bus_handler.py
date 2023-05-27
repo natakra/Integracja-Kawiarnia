@@ -1,3 +1,5 @@
+import json
+
 import pika
 
 
@@ -15,11 +17,11 @@ class EventBusHandler(metaclass=Singleton):
         self.notification_channel = None
         self.connection = None
 
-    def publish_event(self, channel, routing_key='notifications', body='Hello World!'):
+    def publish_event(self, channel, body, routing_key='notifications', ):
         if channel is not None:
             channel.basic_publish(exchange='',
                                   routing_key=routing_key,
-                                  body=body)
+                                  body=json.dumps(body))
             print(" [x] Reservation sent event")
 
     def on_startup(self):

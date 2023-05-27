@@ -1,11 +1,12 @@
 import asyncio
+import json
 
 import aio_pika
 from fastapi import FastAPI
-from trycourier import Courier
 
 from menuService.src.db.database import Base, engine
-from notificationService import secret
+from notificationService import email_sender
+from notificationService.email_sender import EmailType
 
 Base.metadata.create_all(bind=engine)
 
@@ -37,32 +38,29 @@ async def on_startup():
     # Declaring queue
     queue = await channel.declare_queue(queue_name, auto_delete=False, durable=True, passive=True)
 
-    def callback(body):
-        print(" [x] Received %r" % body)
+    async def callback(message):
+        async with message.process():
+            message_body = json.loads(message.body)
+            print(f"Message body is: {message.body}")
+        event_type = str(message_body['type'])
+        email_sender.send_email(map_to_email_type(event_type), {
+            "recipent": "radco.iv@gmail.com",
+            "recipentName": "Radek"
+        })
 
     print(" [x] Awaiting RPC requests")
 
-    await queue.consume(callback=callback)
+    await queue.consume(callback)
     app.state.connection = channel
+
+
+def map_to_email_type(event_type):
+    if event_type == "RESERVATION_CREATED":
+        return EmailType.RESERVATION_CREATED
+    if event_type == "RESERVATION_CANCELLED":
+        return EmailType.RESERVATION_CANCELLED
 
 
 @app.on_event("shutdown")
 def on_shutdown():
     app.state.connection.close()
-
-
-client = Courier(auth_token=secret.courier_token)  # or set via COURIER_AUTH_TOKEN env var
-
-resp = client.send_message(
-    message={
-        "to": {
-            "email": "radco.iv@gmail.com",
-        },
-        "template": "P91X2NCK2B49B1QNHRX01TET9FDY",
-        "data": {
-            "recipientName": "recipientName",
-        },
-    }
-)
-
-print(resp)

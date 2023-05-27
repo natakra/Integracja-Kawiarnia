@@ -33,15 +33,8 @@ def post_reservation(reservation_form: CreateReservation, user_id: str,
         reservation = reservation_crud.create_reservation(db, reservation_form, user_id)
     except TableAlreadyReserved:
         raise HTTPException(status_code=409, detail="Table reserved")
-    ebh.publish_event(ebh.notification_channel)
+    ebh.publish_event(ebh.notification_channel, body={"type": "RESERVATION_CREATED"})
     return reservation
-
-
-@router.get("/test")
-def test():
-    ebh = EventBusHandler()
-    ebh.publish_event(ebh.notification_channel, routing_key="notifications")
-    return "ok"
 
 
 @router.get("/reservation/{reservation_id}")

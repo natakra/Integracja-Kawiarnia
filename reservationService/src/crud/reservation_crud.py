@@ -9,8 +9,8 @@ def create_reservation(db: SessionLocal, reservation_form: CreateReservation, us
     reserved_at = datetime.datetime.now()
     reservation_timestamp = _datetime_iso_to_timestamp(reservation_form.reservation_time)
 
-    if len(check_availability(reservation_form.table_id, reservation_timestamp, db)) > 0:
-        raise TableAlreadyReserved
+    # if len(check_availability(reservation_form.table_id, reservation_timestamp, db)) > 0:
+    #     raise TableAlreadyReserved
     db_item = ReservationDb(
         table_id=reservation_form.table_id,
         user_id=user_id,
