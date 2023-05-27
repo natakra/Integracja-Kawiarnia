@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer
 
 from reservationService.src.db.database import Base
 
@@ -6,6 +6,5 @@ from reservationService.src.db.database import Base
 class TableDb(Base):
     __tablename__ = "tables"
 
-    table_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    availability = Column(Boolean)
+    table_id = Column(Integer, primary_key=True, index=True)
     nb_of_seats = Column(Integer)

@@ -35,7 +35,7 @@ def verify_token(id_token: str):
     try:
         decoded_token = auth.verify_id_token(id_token)
         return decoded_token['uid']
-    except Exception as e:
+    except ValueError as e:
         print(traceback.print_exception(e))
         return None
 
@@ -43,8 +43,9 @@ def verify_token(id_token: str):
 def check_api_key(key: str = Depends(api_key_header)):
     print(verify_token(key))
 
-    if verify_token(key):
-        return key
+    uid = verify_token(key)
+    if uid is not None:
+        return uid
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="You didn't pass the api key in the header! Header: x-api-key",
@@ -54,6 +55,24 @@ def check_api_key(key: str = Depends(api_key_header)):
 class FooModel(BaseModel):
     example_int: int
     example_str: str
+
+
+@route(
+    request_method=app.get,
+    service_url=SERVICE_URL,
+    gateway_path='/tables/availability',
+    service_path='/tables/availability',
+    query_params=["time"],
+    status_code=status.HTTP_200_OK,
+    tags=['Query'],
+    dependencies=[
+        Depends(check_api_key)
+    ],
+)
+async def check_query_params_and_body(
+        time: str, request: Request, response: Response
+):
+    pass
 
 
 @route(
@@ -85,5 +104,22 @@ async def check_query_params_and_body(
 )
 async def post_reservation(
         reservation_form: CreateReservation, request: Request, response: Response, user_id: str = Depends(check_api_key)
+):
+    pass
+
+
+@route(
+    request_method=app.delete,
+    service_url=SERVICE_URL,
+    gateway_path='/reservation/{path}',
+    service_path='/reservation/{path}',
+    status_code=status.HTTP_202_ACCEPTED,
+    tags=['Query', 'Body', 'Path'],
+    dependencies=[
+        Depends(check_api_key)
+    ],
+)
+async def check_query_params_and_body(
+        path: int, request: Request, response: Response
 ):
     pass

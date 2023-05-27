@@ -14,7 +14,7 @@ def send_email(email_type: EmailType, email_info: dict):
     if email_type == EmailType.RESERVATION_CREATED:
         send_reservation_email(email_info)
     if email_type == EmailType.RESERVATION_CANCELLED:
-        send_reservation_email(email_info)
+        send_reservation_cancel_email(email_info)
 
 
 def send_reservation_email(email_info):
@@ -32,7 +32,8 @@ def send_reservation_email(email_info):
         }
     )
 
-def send_reservation_email(email_info):
+
+def send_reservation_cancel_email(email_info):
     client = Courier(auth_token=secret.courier_token)  # or set via COURIER_AUTH_TOKEN env var
 
     client.send_message(
