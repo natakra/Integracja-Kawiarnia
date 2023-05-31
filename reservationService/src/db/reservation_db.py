@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Float, Integer, String, TIMESTAMP
 
-from reservationService.src.db.database import Base
+from src.db.database import Base
 
 
 class ReservationDb(Base):

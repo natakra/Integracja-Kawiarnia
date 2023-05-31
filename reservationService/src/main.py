@@ -1,9 +1,9 @@
 import pika
 from fastapi import FastAPI
 
-from reservationService.src.db.database import engine, Base
-from reservationService.src.event_bus_handler import EventBusHandler
-from reservationService.src.router.reservationrouter import router
+from src.db.database import engine, Base
+from src.event_bus_handler import EventBusHandler
+from src.router.reservationrouter import router
 
 app = FastAPI()
 

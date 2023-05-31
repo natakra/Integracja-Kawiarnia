@@ -1,10 +1,10 @@
 import datetime
 import random
 
-from reservationService.src.db.database import SessionLocal
-from reservationService.src.db.reservation_db import ReservationDb
-from reservationService.src.db.table_db import TableDb
-from reservationService.src.schemas.reservation_schemas import CreateReservation
+from src.db.database import SessionLocal
+from src.db.reservation_db import ReservationDb
+from src.db.table_db import TableDb
+from src.schemas.reservation_schemas import CreateReservation
 
 HOURS_2 = 2 * 60 * 60
 

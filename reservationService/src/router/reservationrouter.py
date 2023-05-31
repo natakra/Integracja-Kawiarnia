@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Path, Depends, HTTPException
 
-from reservationService.src.crud import reservation_crud
-from reservationService.src.crud.reservation_crud import TableAlreadyReserved
-from reservationService.src.db.database import SessionLocal, get_db
-from reservationService.src.event_bus_handler import EventBusHandler
-from reservationService.src.schemas.reservation_schemas import CreateReservation, Reservation
+from src.crud import reservation_crud
+from src.crud.reservation_crud import TableAlreadyReserved
+from src.db.database import SessionLocal, get_db
+from src.event_bus_handler import EventBusHandler
+from src.schemas.reservation_schemas import CreateReservation, Reservation
 
 router = APIRouter()
 

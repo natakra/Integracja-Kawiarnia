@@ -1,10 +1,37 @@
-from menuService.src.db.database import SessionLocal
-from menuService.src.db.menu_item_db import MenuItem as MenuItemDb
-from menuService.src.schemas.menu_item import MenuItemCreate, MenuItem
+from src.db.database import SessionLocal
+from src.db.menu_item_db import MenuItem as MenuItemDb
+from src.schemas.menu_item import MenuItemCreate, MenuItem
+
+
+def fake_menu(db: SessionLocal):
+    add_new_item(MenuItemCreate(
+        name="Frytki",
+        price=8.9
+    ), db)
+    add_new_item(MenuItemCreate(
+        name="Kawa",
+        price=10
+    ), db)
+    add_new_item(MenuItemCreate(
+        name="Pączek",
+        price=5
+    ), db)
+    add_new_item(MenuItemCreate(
+        name="Cola",
+        price=13
+    ), db)
+    add_new_item(MenuItemCreate(
+        name="Ciastko",
+        price=6
+    ), db)
 
 
 def get_all_items(db: SessionLocal):
-    return db.query(MenuItemDb).offset(0).all()
+    menu_items = db.query(MenuItemDb).offset(0).all()
+    if len(menu_items) == 0:
+        fake_menu(db)
+        menu_items = db.query(MenuItemDb).offset(0).all()
+    return menu_items
 
 
 def add_new_item(new_item: MenuItemCreate, db: SessionLocal):

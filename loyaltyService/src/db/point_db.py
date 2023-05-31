@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, BigInteger, String
 
-from loyaltyService.src.db.database import Base
+from src.db.database import Base
 
 
 class Reward(Base):

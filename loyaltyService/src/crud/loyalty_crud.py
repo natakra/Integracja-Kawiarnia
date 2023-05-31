@@ -1,7 +1,7 @@
 from time import time
 
-from loyaltyService.src.db.database import SessionLocal
-from loyaltyService.src.db.point_db import Reward
+from src.db.database import SessionLocal
+from src.db.point_db import Reward
 
 
 def get_points(user_id, db):

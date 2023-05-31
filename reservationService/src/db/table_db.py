@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer
 
-from reservationService.src.db.database import Base
+from src.db.database import Base
 
 
 class TableDb(Base):

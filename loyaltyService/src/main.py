@@ -1,9 +1,9 @@
 from fastapi import FastAPI, Depends
 
-from loyaltyService.src.crud import loyalty_crud
-from loyaltyService.src.db.database import Base, engine, get_db
-from loyaltyService.src.router import loyalty_router
-from loyaltyService.src.schemas.loyalty_schemas import Reward
+from src.crud import loyalty_crud
+from src.db.database import Base, engine, get_db
+from src.router import loyalty_router
+from src.schemas.loyalty_schemas import Reward
 
 Base.metadata.create_all(bind=engine)
 

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from loyaltyService.src.crud import loyalty_crud
-from loyaltyService.src.db.database import get_db
+from src.crud import loyalty_crud
+from src.db.database import get_db
 
 router = APIRouter()
 

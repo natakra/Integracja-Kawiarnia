@@ -8,7 +8,8 @@ RUN pip install --upgrade pip
 
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-COPY ./src /code/src
+COPY ./main.py /code/main.py
+COPY ./firebase_config.json /code/firebase_config.json
 
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 

@@ -1,15 +1,13 @@
 import json
+import os
 
 import pika
 
+from utils.singleton_meta import Singleton
 
-class Singleton(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
+RABBIT_HOST = os.getenv("RABBIT_HOST")
+RABBIT_USER = os.getenv("RABBIT_USER")
+RABBIT_PASS = os.getenv("RABBIT_PASS")
 
 
 class EventBusHandler(metaclass=Singleton):
@@ -17,7 +15,7 @@ class EventBusHandler(metaclass=Singleton):
         self.notification_channel = None
         self.connection = None
 
-    def publish_event(self, channel, body, routing_key='notifications', ):
+    def publish_event(self, channel, body, routing_key='notifications'):
         if channel is not None:
             channel.basic_publish(exchange='',
                                   routing_key=routing_key,
@@ -25,7 +23,7 @@ class EventBusHandler(metaclass=Singleton):
             print(" [x] Reservation sent event")
 
     def on_startup(self):
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(RABBIT_HOST, heartbeat=0))
         self.notification_channel = self.connection.channel()
         self.notification_channel.queue_declare(queue='notifications')
 

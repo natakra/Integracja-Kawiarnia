@@ -1,24 +1,34 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 
-from loyaltyService.src.crud import loyalty_crud
-from loyaltyService.src.db.database import Base, engine, get_db
-from loyaltyService.src.router import loyalty_router
-from loyaltyService.src.schemas.loyalty_schemas import Reward
+from src.db.database import Base, engine
+from src.event_bus_handler import EventBusHandler
+from src.router import orderrouter
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+ebh: EventBusHandler | None = None
 
 
 @app.get("/")
-async def root(db=Depends(get_db)):
-    loyalty_crud.add_reward(Reward(
-        id=2137,
-        points=21,
-        date=1683221438,
-        user_id=2137
-    ), db)
+async def root():
     return {"message": "Hello World"}
 
 
-app.include_router(loyalty_router.router)
+app.include_router(orderrouter.router)
+
+
+@app.on_event("startup")
+async def on_startup():
+    global ebh
+    ebh = EventBusHandler()
+    await ebh.on_startup()
+
+
+@app.on_event("shutdown")
+async def on_shutdown():
+    ebh.on_shutdown()
+
+
+def get_ebh():
+    return ebh

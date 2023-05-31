@@ -1,0 +1,26 @@
+# App Events
+
+- MENU_UPDATED
+  - menu_update - list of dicts - menu items
+    - id: int
+    - price: float
+- RESERVATION_CREATED
+  - Opcjonalnie: 
+    - reservation_id: str
+    - username: str
+    - email: str
+- RESERVATION_CANCELLED
+  - Opcjonalnie:
+    - reservation_id: str
+    - username: str
+    - email: str
+- PAYMENT_RECEIVED
+  - order_id: int
+  - user_id: str
+  - price: float
+- PAYMENT_REJECTED
+  - order_id: str
+- ORDER_CREATED
+  - order_id: int
+  - price: float
+  - user_id: str

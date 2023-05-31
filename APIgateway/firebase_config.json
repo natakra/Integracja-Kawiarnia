@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "integracja-kawiarnia",
+  "private_key_id": "33d9254f242d3a233da05fa1e75b5a5ad967ffd2",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCeEre1yabYoVq7\ngtCYK/xbRKgiWtOxO3jD5clb8R0EF9nuFSoMoMufl2x0xqGNdvohP3iu5QdgJWHq\nFsmHz965fhgN63pRU1yr2uJGYcB+V/eDsVV7aJ53hFvA97okUojAGEIuB8hjAgrN\ndEg+/nr1aHB8TV1froy47HFxFqJs+dlgGkTGkWuJxLGjkYj89o6biXDsxac0noB3\nOSanLx/Yg9SaehxZZed1StceB/hqDpnJygv+20iSYnHO2ICNmy+wBhv3taDDipCS\nwWoIWpLPJfwYFvxFUwj325LJ7sUgMJ2Y3gmVJD+TRc0jtTvetmEz8rNAX18Iki0g\nHTlBU1eXAgMBAAECggEATey1QrkPdqCIfYKd+T5Jz+ZXKmRzEl5aiNv4+Umx/6gQ\nZ3VofsQvzVNVBHY9AuOBqC1FfZZrHeMf00n7fGeliPTXv9jzOi8pspCbVo3u2nnc\nC0A6/zTSVeHaZ5TX3vsO7f+ndFCi4OgLUkA+M0u5asxbE3QCEV6XgbwRqmm5lZWJ\nP/uxrN+UAG72dBl/Ury8kOj2dsdSDOFdg6K93UXlCpoa4KnBJ2yGiW3mFtNQoJqE\nvgPbSvRX6Y9p3EiXL+o5EVQbybYn9NO7d1nA+Q6XxwWPZ8UZlYFxNm/qTICd4blD\nUZrtlCmEULK0Gbci/wVtq4VnkWbXoTa+CY194EzMgQKBgQDPBJcP6kex3zcjYpdq\nOU3YZJkyGVABqhBmL2dSBkdD0ljy1OTYO/PVCuf7zsaXwxkv3g8B2ti4wWV7Omr3\nUdoR9Rbywfar7Lr/CDNvhpouNY9Dvps6xBO/CW3bL++ydUDMI4N58IqVqtBxHmWK\noQe22CBHaD0YUiD5FdEsv5SugQKBgQDDeXYQQnnbErde6oxGvQCk9ZEAbHmTA39h\nhyQgtJMaeNckjEjcmrFO/24yEO1VYpYkedML5LF/cUX2XUInNxuUOB0peQ02CWc0\nfaAFxqw3V4lpnpRUM82ejRpRFVX5it0kLjkqIDIgdoyDulNyUwOPZe2hjsN+qJqs\nvO+sUBaqFwKBgBukgkNWxjIDG0q3TH6bnkBp1mbxKFTAj6YFaGd0fSmaOdRbBx+0\nia+F4EooZy42l/NjVF+sCEpLULCusT/LBzJkpqbNrZFxb9rEDpIyx/2pmzKxjeq/\n6d8VdDzTXs9Whst7Zn/u1aJ8h47DP03OiMgqfczrJ1VLCioYdrDh+AmBAoGAR79y\nVV+BCKcjBUTD/kbrUKEN+wDV0t9KxwpqeVKuV94Y4cJYEBj7kcpxsRDDfD62a2cH\nzuq/N87k5huu52PzzICYO5vB/J6Q8hRWQyh8F8gamNjrCskE5PhXu4FAUFrm9pu8\nwbiVjZLV2pfufxz3RpAcG9uh6ACM3XBv7GhtGTsCgYATySB3H0CbXXzAO7tFQwu7\nIZ1gC5qH1paDrLd42mQGrT0pY4/sj1SBMoGpmzSlBEjAHOrcQ+IIw6MuVj8YyKor\ntz5G1euj/y0AQzWlzg9nJCPajygU2CW4aGj4PuBzy1gc5XEXGEDfgstYISWENM81\nE55emJ5DK7V6IyApSGzYdQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-2zc4w@integracja-kawiarnia.iam.gserviceaccount.com",
+  "client_id": "118395321927794356838",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-2zc4w%40integracja-kawiarnia.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

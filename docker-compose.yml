@@ -1,25 +1,84 @@
 services:
-  order:
-    build: ./orderService
-    ports:
-      - "12340:8000"
-  user:
-    build: ./userService
-    ports:
-      - "12341:8000"
-  loyalty:
-    build: ./loyaltyService
-    ports:
-      - "12342:8000"
-  menu:
-    build: ./menuService
-    ports:
-      - "12343:8000"
-  reservation:
-    build: ./reservationService
-    ports:
-      - "12344:8000"
   rabbitmq:
-    image: "rabbitmq:latest"
+    build: ./rabbit
+    hostname: rabbitmq
     ports:
       - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:15672" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - servicesnetwork
+  reservation:
+    restart: on-failure
+    build: ./reservationService
+    depends_on:
+      - rabbitmq
+    networks:
+      - servicesnetwork
+  payment:
+    restart: on-failure
+    build: ./paymentService
+    depends_on:
+      - rabbitmq
+    networks:
+      - servicesnetwork
+  notification:
+    restart: on-failure
+    build: ./notificationService
+    depends_on:
+      - rabbitmq
+    networks:
+      - servicesnetwork
+  user:
+    restart: on-failure
+    build: ./userService
+    depends_on:
+      - rabbitmq
+    networks:
+      - servicesnetwork
+  loyalty:
+    restart: on-failure
+    build: ./loyaltyService
+    depends_on:
+      - rabbitmq
+    networks:
+      - servicesnetwork
+  menu:
+    restart: on-failure
+    build: ./menuService
+    depends_on:
+      - rabbitmq
+    networks:
+      - servicesnetwork
+  order:
+    restart: on-failure
+    build: ./orderService
+    depends_on:
+      - rabbitmq
+    networks:
+      - servicesnetwork
+  gateway:
+    restart: on-failure
+    build: ./APIgateway
+    depends_on:
+      - rabbitmq
+    environment:
+      - RESERVATION_SERVICE_URL = "http://reservation:8000"
+      - PAYMENT_SERVICE_URL = "http://payment:8000"
+      - ORDER_SERVICE_URL = "http://order:8000"
+      - MENU_SERVICE_URL = "http://menu:8000"
+      - LOYALTY_SERVICE_URL = "http://loyalty:8000"
+      - USER_SERVICE_URL = "http://user:8000"
+      - NOTIFICATION_SERVICE_URL = "http://notification:8000"
+    ports:
+      - "12345:8000"
+    networks:
+      - servicesnetwork
+
+
+networks:
+  servicesnetwork:

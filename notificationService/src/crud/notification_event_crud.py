@@ -1,6 +1,6 @@
-from notificationService.db.database import SessionLocal
-from notificationService.db.notification_event_db import EventDb
-from notificationService.schemas.notification_event import Event
+from src.db.database import SessionLocal
+from src.db.notification_event_db import EventDb
+from src.schemas.notification_event import Event
 
 
 def get_all_items(db: SessionLocal):

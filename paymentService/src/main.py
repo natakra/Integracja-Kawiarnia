@@ -1,47 +1,48 @@
 import traceback
-from typing import List
 
 import stripe
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException, Path, Depends, Request
 
-from paymentService.src.db.database import Base, engine
+from src import stripe_event_handler
+from src.crud.payment_crud import get_order_by_id
+from src.db.database import Base, engine, get_db, SessionLocal
+from src.event_bus_handler import EventBusHandler
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-
-def calculate_order_amount(items):
-    # Replace this constant with a calculation of the order's amount
-    # Calculate the order total on the server to prevent
-    # people from directly manipulating the amount on the client
-    return 1400
+ebh: EventBusHandler | None = None
 
 
-class Product(BaseModel):
-    id: str
+def get_ebh():
+    return ebh
 
 
-class PaymentRequest(BaseModel):
-    items: List[Product]
+@app.get("/")
+def root():
+    return "Running"
 
 
-@app.post("/create-payment-intent")
-async def root(request: PaymentRequest):
+@app.post("/create-payment-intent/{order_id}")
+async def root(order_id: int = Path(), db: SessionLocal = Depends(get_db)):
     stripe.api_key = \
         "sk_test_51N7DrUHoWwrUTQHVZgenn8y5DleceuIVDSbTHqwVCurYXbTWC5FV9a9ozb7z6Y67RlTneXduD3W0m7RJk8r42Utn00zfmksxqt"
 
-    data = request
+    order = get_order_by_id(order_id, db)
 
     try:
         # Create a PaymentIntent with the order amount and currency
         intent = stripe.PaymentIntent.create(
-            amount=calculate_order_amount(data.items),
+            amount=int(order.price * 100),
+            # amount=1200,
             currency='pln',
             automatic_payment_methods={
                 'enabled': True,
             },
+            metadata={
+                "order_id": order_id
+            }
         )
         return {
             'clientSecret': intent['client_secret']
@@ -50,11 +51,32 @@ async def root(request: PaymentRequest):
         raise HTTPException(status_code=403, detail=f"{traceback.print_exception(e)}")
 
 
+@app.post("/stripe_webhooks")
+async def handle_event(request: Request, db: SessionLocal = Depends(get_db), ebh: EventBusHandler = Depends(get_ebh)):
+    def get_order_id(event):
+        return event["data"]["object"]["metadata"]["order_id"]
+
+    print(await request.body())
+    event = await request.json()
+    order = get_order_by_id(get_order_id(event), db)
+    print(event)
+    print(event['type'])
+    match event['type']:
+        case 'payment_intent.succeeded':
+            stripe_event_handler.handle_payment_success(order, ebh)
+        case 'payment_intent.canceled':
+            stripe_event_handler.handle_payment_failed(order, ebh)
+        case 'payment_intent.payment_failed':
+            stripe_event_handler.handle_payment_failed(order, ebh)
+
+
 @app.on_event("startup")
-def on_startup():
-    pass
+async def on_startup():
+    global ebh
+    ebh = EventBusHandler()
+    await ebh.on_startup()
 
 
 @app.on_event("shutdown")
 def on_shutdown():
-    pass
+    ebh.on_shutdown()

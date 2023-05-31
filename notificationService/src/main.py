@@ -4,9 +4,9 @@ import json
 import aio_pika
 from fastapi import FastAPI
 
-from menuService.src.db.database import Base, engine
-from notificationService import email_sender
-from notificationService.email_sender import EmailType
+from src.db.database import Base, engine
+from src import email_sender
+from src.email_sender import EmailType
 
 Base.metadata.create_all(bind=engine)
 
@@ -25,6 +25,7 @@ async def on_startup():
     global channel
     loop = asyncio.get_event_loop()
     connection = await aio_pika.connect_robust(
+        "amqp://guest:guest@rabbitmq/",
         loop=loop
     )
     queue_name = 'notifications'
@@ -59,6 +60,8 @@ def map_to_email_type(event_type):
         return EmailType.RESERVATION_CREATED
     if event_type == "RESERVATION_CANCELLED":
         return EmailType.RESERVATION_CANCELLED
+    if event_type == "MENU_UPDATED":
+        return EmailType.MENU_UPDATED
 
 
 @app.on_event("shutdown")
