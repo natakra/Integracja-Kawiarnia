@@ -1,7 +1,8 @@
+import json
 import traceback
 
 import stripe
-from fastapi import FastAPI, HTTPException, Path, Depends, Request
+from fastapi import FastAPI, HTTPException, Path, Depends
 
 from src import stripe_event_handler
 from src.crud.payment_crud import get_order_by_id
@@ -35,7 +36,6 @@ async def root(order_id: int = Path(), db: SessionLocal = Depends(get_db)):
         # Create a PaymentIntent with the order amount and currency
         intent = stripe.PaymentIntent.create(
             amount=int(order.price * 100),
-            # amount=1200,
             currency='pln',
             automatic_payment_methods={
                 'enabled': True,
@@ -51,13 +51,14 @@ async def root(order_id: int = Path(), db: SessionLocal = Depends(get_db)):
         raise HTTPException(status_code=403, detail=f"{traceback.print_exception(e)}")
 
 
-@app.post("/stripe_webhooks")
-async def handle_event(request: Request, db: SessionLocal = Depends(get_db), ebh: EventBusHandler = Depends(get_ebh)):
+@app.post("/stripe_webhooks", status_code=200)
+async def handle_event(body: dict, db: SessionLocal = Depends(get_db), ebh: EventBusHandler = Depends(get_ebh)):
     def get_order_id(event):
         return event["data"]["object"]["metadata"]["order_id"]
 
-    print(await request.body())
-    event = await request.json()
+    print()
+    # event = await request.json()
+    event = body
     order = get_order_by_id(get_order_id(event), db)
     print(event)
     print(event['type'])

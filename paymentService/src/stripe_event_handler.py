@@ -8,5 +8,6 @@ def handle_payment_success(payment, ebh: EventBusHandler):
                                        "price": payment.price})
 
 
-def handle_payment_failed(order, ebh: EventBusHandler):
-    pass
+def handle_payment_failed(payment, ebh: EventBusHandler):
+    ebh.publish_payment_event(type=EventBusHandler.PAYMENT_REJECTED,
+                              payment={"order_id": payment.order_id})

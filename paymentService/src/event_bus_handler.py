@@ -43,7 +43,6 @@ class EventBusHandler(metaclass=Singleton):
     def publish_event(self, channel, event_type, body, routing_key=None):
         if routing_key is None:
             routing_key = self.up_queue_name
-        print(channel)
         if channel is not None:
             body["type"] = event_type
             channel.basic_publish(exchange='',
@@ -52,7 +51,8 @@ class EventBusHandler(metaclass=Singleton):
             print(f" [x] {event_type} sent event")
 
     def publish_payment_event(self, type, payment: dict):
-        self.publish_event(self.up_channel, type, payment)
+        self.publish_event(self.up_channel, type, payment, routing_key="order")
+        self.publish_event(self.up_channel, type, payment, routing_key="loyalty")
 
     async def on_startup(self):
         self.up_connection = pika.BlockingConnection(pika.ConnectionParameters(RABBIT_HOST, heartbeat=0))
