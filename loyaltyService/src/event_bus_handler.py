@@ -5,9 +5,11 @@ import os
 import aio_pika
 import pika
 
-from src.crud.order_crud import update_menu, order_status_update, store_points
+# from src.crud.order_crud import update_menu, order_status_update
+# from src.schemas.order_schemas import OrderStatus
+from src.crud import loyalty_crud
+from src.crud.loyalty_crud import collect_reward
 from src.db.database import get_db
-from src.schemas.order_schemas import OrderStatus
 from utils.singleton_meta import Singleton
 
 RABBIT_HOST = os.getenv("RABBIT_HOST")
@@ -16,37 +18,27 @@ RABBIT_PASS = os.getenv("RABBIT_PASS")
 
 
 class EventBusHandler(metaclass=Singleton):
-    ORDER_CREATED = "ORDER_CREATED"
+    LOYALTY_POINTS = "USER_POINTS"
 
     def __init__(self):
         self.up_channel = None
         self.down_channel = None
         self.down_connection = None
         self.up_connection = None
-        self.up_queue_name = 'payment'
-        self.down_queue_name = 'order'
+        self.up_queue_name = 'order'
+        self.down_queue_name = 'loyalty'
 
-    @staticmethod
-    async def on_message(message):
+    async def on_message(self, message):
         db = get_db().__next__()
         async with message.process():
             message_body = json.loads(message.body)
             print(f"Message body is: {message.body}")
         event_type = str(message_body['type'])
         match event_type:
-            case "MENU_UPDATED":
-                update_menu(db, message_body["menu_update"])
+            case "ORDER_CREATED":
+                self.handle_order_created(db, message_body)
             case "PAYMENT_RECEIVED":
-                order_id = message_body["order_id"]
-                a = order_status_update(db, order_id, OrderStatus.STATUS_PAID.value)
-                print(a.status)
-            case "PAYMENT_REJECTED":
-                order_id = message_body["order_id"]
-                order_status_update(db, order_id, OrderStatus.STATUS_CANCELLED.value)
-            case "USER_POINTS":
-                store_points(db,
-                             user_id=message_body["user_id"],
-                             points=message_body["points"])
+                self.handle_payment_received(db, message_body)
 
     def publish_event(self, channel, event_type, body, routing_key=None):
         if routing_key is None:
@@ -58,15 +50,8 @@ class EventBusHandler(metaclass=Singleton):
                                   body=json.dumps(body))
             print(f" [x] {event_type} sent event")
 
-    def publish_order_event(self, order: dict):
-        self.publish_event(self.up_channel, EventBusHandler.ORDER_CREATED, order)
-        self.publish_event(self.up_channel, EventBusHandler.ORDER_CREATED, order, routing_key="notifications")
-
-    def publish_order_to_loyalty_event(self, order: dict):
-        self.publish_event(channel=self.up_channel,
-                           event_type=EventBusHandler.ORDER_CREATED,
-                           body=order,
-                           routing_key='loyalty')
+    def publish_points_event(self, points: dict):
+        self.publish_event(self.up_channel, EventBusHandler.LOYALTY_POINTS, points)
 
     async def on_startup(self):
         self.up_connection = pika.BlockingConnection(pika.ConnectionParameters(RABBIT_HOST, heartbeat=0))
@@ -97,3 +82,21 @@ class EventBusHandler(metaclass=Singleton):
     def on_shutdown(self):
         self.down_connection.close()
         self.up_connection.close()
+
+    def handle_order_created(self, db, event):
+        points_to_collect = 100 * event["free_coffee_count"]
+        user_id = event["user_id"]
+        collect_reward(points_to_collect, user_id, db)
+        self.send_update(db, user_id)
+
+    def handle_payment_received(self, db, event):
+        price = int(event["price"])
+        user_id = event["user_id"]
+        loyalty_crud.add_reward(user_id, price, db)
+        self.send_update(db, user_id)
+
+    def send_update(self, db, user_id):
+        self.publish_points_event({
+            "user_id": user_id,
+            "points": loyalty_crud.get_points(user_id, db)
+        })

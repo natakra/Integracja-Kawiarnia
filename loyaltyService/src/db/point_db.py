@@ -7,7 +7,7 @@ class Reward(Base):
     __tablename__ = "loyaltypoints"
     id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     points = Column(Integer)
-    user_id = Column(BigInteger)
+    user_id = Column(String)
     date = Column(BigInteger)
 
 

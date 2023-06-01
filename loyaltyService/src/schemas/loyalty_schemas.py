@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class Reward(BaseModel):
     id: int
     points: int

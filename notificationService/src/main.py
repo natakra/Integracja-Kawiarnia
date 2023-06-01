@@ -1,18 +1,26 @@
 import asyncio
 import json
+import os
 
 import aio_pika
+import firebase_admin
 from fastapi import FastAPI
+from firebase_admin import credentials
 
-from src.db.database import Base, engine
 from src import email_sender
+from src.db.database import Base, engine
 from src.email_sender import EmailType
+from src.firebase_notification_sender import send_new_order_notification
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
 channel = None
+
+RABBIT_HOST = os.getenv("RABBIT_HOST")
+RABBIT_USER = os.getenv("RABBIT_USER")
+RABBIT_PASS = os.getenv("RABBIT_PASS")
 
 
 @app.get("/")
@@ -22,10 +30,12 @@ async def root():
 
 @app.on_event("startup")
 async def on_startup():
+    cred = credentials.Certificate("./firebase_config.json")
+    firebase_admin.initialize_app(cred)
     global channel
     loop = asyncio.get_event_loop()
     connection = await aio_pika.connect_robust(
-        "amqp://guest:guest@rabbitmq/",
+        f"amqp://{RABBIT_USER}:{RABBIT_PASS}@{RABBIT_HOST}/",
         loop=loop
     )
     queue_name = 'notifications'
@@ -48,6 +58,8 @@ async def on_startup():
             "recipent": "radco.iv@gmail.com",
             "recipentName": "Radek"
         })
+        if event_type == "ORDER_CREATED":
+            send_new_order_notification()
 
     print(" [x] Awaiting RPC requests")
 

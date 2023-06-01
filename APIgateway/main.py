@@ -1,3 +1,4 @@
+import json
 import os
 import traceback
 from enum import Enum
@@ -101,6 +102,10 @@ def check_api_key(key: str = Depends(api_key_header)):
     )
 
 
+async def get_body_as_string(request: Request):
+    return json.loads(await request.body())
+
+
 class FooModel(BaseModel):
     example_int: int
     example_str: str
@@ -137,6 +142,41 @@ async def check_tables_availability(
 )
 async def check_table_by_id(
         path: int, request: Request, response: Response
+):
+    pass
+
+
+class AuthInfo(BaseModel):
+    email: str
+    password: str
+
+
+@route(
+    request_method=app.post,
+    service_url=USER_SERVICE_URL,
+    gateway_path='/login',
+    service_path='/login',
+    status_code=status.HTTP_200_OK,
+    tags=['Query', 'Body', 'Path'],
+    body_params=["body"]
+)
+async def login(
+        body: AuthInfo, request: Request, response: Response
+):
+    pass
+
+
+@route(
+    request_method=app.post,
+    service_url=USER_SERVICE_URL,
+    gateway_path='/register',
+    service_path='/register',
+    status_code=status.HTTP_200_OK,
+    tags=['Query', 'Body', 'Path'],
+    body_params=["body"]
+)
+async def register(
+        body: AuthInfo, request: Request, response: Response
 ):
     pass
 
@@ -213,12 +253,12 @@ async def payment_intent(
     gateway_path='/stripe_webhooks',
     service_path='/stripe_webhooks',
     status_code=status.HTTP_200_OK,
+    body_params=["body"],
     tags=['Query', 'Body', 'Path'],
 )
 async def payment_webhook(
-        request: Request, response: Response
+        request: Request, response: Response, body: dict = Depends(get_body_as_string)
 ):
-    print(request)
     pass
 
 
@@ -235,5 +275,40 @@ async def payment_webhook(
 )
 async def get_menu(
         request: Request, response: Response
+):
+    pass
+
+
+@route(
+    request_method=app.get,
+    service_url=MENU_SERVICE_URL,
+    gateway_path='/menu',
+    service_path='/menu',
+    status_code=status.HTTP_200_OK,
+    tags=['Query', 'Body', 'Path'],
+    dependencies=[
+        Depends(check_api_key)
+    ]
+)
+async def get_menu(
+        request: Request, response: Response
+):
+    pass
+
+
+@route(
+    request_method=app.get,
+    service_url=LOYALTY_SERVICE_URL,
+    gateway_path='/loyalty/points',
+    service_path='/loyalty/points',
+    status_code=status.HTTP_200_OK,
+    tags=['Query', 'Body', 'Path'],
+    query_params=['user_id'],
+    dependencies=[
+        Depends(check_api_key)
+    ]
+)
+async def get_loyalty_points(
+        request: Request, response: Response, user_id: str = Depends(check_api_key)
 ):
     pass

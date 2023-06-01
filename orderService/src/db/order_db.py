@@ -9,4 +9,5 @@ class Order(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     user_id = Column(String)
     price = Column(Float)
+    # free_coffees = Column(Integer)
     status = Column(String)
